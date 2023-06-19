@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <style>
+
+        body{
+            padding-left: 20rem;
+        }
+
+    </style>
+</head>
+<body class="p-5">
+    <div class="container d-flex flex-column justify-content-center p-5 " style="text-align: center; width: 100vh;max-height: 100%;height: 40rem;background-color: rgb(250, 245, 169);border-radius: 5rem;">
+        <h1 class="mb-5" id="topic">ค้นหาสมาชิก</h1>
+        <!-- <img src="assets/logo.jpg" class="d-flex d-block mb-5" style="width: 50%; align-self: center;"> -->
+        <div class="mb-5  d-flex flex-row align-items-center justify-content-around " id="buttontop" >
+            <button class="btn btn-success" onclick="setVisibilitybutton('add')">เพิ่มสมาชิก</button>
+            <button class="btn btn-warning" onclick="setVisibilitybutton('edit')">แก้ไขสมาชิก</button>
+            <button class="btn btn-danger" onclick="setVisibilitybutton('delete')">ลบสมาชิก</button>
+        </div>
+            <div class="mb-5  d-flex flex-column align-items-center w-auto ">
+                <!-- <label for="name" class="form-label mb-5" style="font-size: 2rem;">รหัสนักศึกษา</label><br> -->
+                <div class="d-flex flex-row  align-items-center">
+                <p class="me-5">รหัสนักศึกษา</p>
+                <input type="text" id="studentID" name="studentID" class="form-control" style="width: 20rem;height: 3rem;margin-right: 5rem;">
+                <button class="btn btn-primary" onclick="fetchData()">ค้นหา</button>
+        
+            </div>
+            </div>
+ 
+            <div class="mb-5  d-flex flex-row align-items-center w-auto">
+                <!-- <label for="password" class="form-label mb-5" style="font-size: 2rem;">รหัสผ่าน</label><br> -->
+                <h4 style="margin-right: 10rem;">ชื่อ</h4>
+                <input type="text" id="name"  class="form-control" style="width: 70%;height: 3rem;" readonly>
+            </div>
+
+            <div class="mb-5  d-flex flex-row align-items-center w-auto" style="visibility: hidden;">
+                <!-- <label for="password" class="form-label mb-5" style="font-size: 2rem;">รหัสผ่าน</label><br> -->
+                <h4 style="margin-right: 4.2rem;">รหัสผ่าน</h4>
+                <input type="text" id="studentId"  class="form-control" style="width: 70%;height: 3rem;" readonly>
+            </div>
+
+            <div class="mb-2  d-flex flex-row align-items-center w-auto" style="visibility: hidden;">
+                <h4 style="margin-right: 4.2rem;">สิทธิ์ผู้ใช้งาน</h4>
+                <select  id="level" class="form-select" style="width: 10rem;">
+                    <option>user</option>
+                    <option>admin</option>
+                </select>
+            </div>
+
+            <div class="d-flex flex-row align-items-center justify-content-around" id="buttonhidden" style="visibility: hidden;">
+                <button class="btn btn-success" id="control" onclick="">เพิ่มสมาชิก</button>
+                <button class="btn btn-danger" id="cancel" onclick="setVisibilitybutton()">ยกเลิก</button>
+            </div>
+           
+       
+    </div>
+
+    <script>
+        function fetchData() {
+            var inputElement = document.getElementById('studentID');
+            var inputdata = inputElement.value;
+
+            var xhr = new XMLHttpRequest();
+            
+            xhr.open('POST', '/getuser', true);
+            // สร้าง XMLHttpRequest object
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            // กำหนดเมธอดและ URL สำหรับร้องขอข้อมูล
+
+            // ตั้งค่า callback function เมื่อมีการเปลี่ยนแปลงในสถานะการเชื่อมต่อ
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                // แปลงข้อมูลที่ได้รับมาเป็น JSON
+                // JSON.parse
+                var data = JSON.parse(xhr.responseText);
+
+                // ดึงข้อมูลที่ต้องการแสดงใน input
+                var inputData = data;
+                console.log(inputData.data[0])
+                console.log(inputData.data[0]['name'])   
+                var name = inputData.data[0]['name']
+                var studentID = inputData.data[0]['studentId']
+                var level = inputData.data[0]['level']
+                // แสดงข้อมูลในแท็ก input
+                
+                document.getElementById('name').value = name;
+                document.getElementById('studentId').value = studentID;
+                document.getElementById('level').value = level;
+                }
+            };
+    
+            var data = 'studentID=' + encodeURIComponent(inputdata);
+            // ส่งคำขอ
+            xhr.send(data);
+}
+
+        function toggleInput() {
+        var input = document.getElementById('name');
+        var editButton = document.getElementById('editButton');
+
+        if (input.readOnly) {
+            input.readOnly = false;
+        } else {
+            input.readOnly = true;
+        }
+        }
+
+
+
+
+        function setVisibilitybutton(value) {
+            var elementt = document.getElementById("buttontop");
+            var elementb = document.getElementById("buttonhidden");
+            if (elementb.style.visibility === "visible") {
+                elementt.style.visibility = "visible";
+                elementb.style.visibility = "hidden";
+                
+            } else {
+                elementt.style.visibility = "hidden";
+                elementb.style.visibility = "visible";
+                
+            }
+            if(value=='add'){
+                buttoncontrol(1);
+            }
+            else if(value=='edit'){
+                buttoncontrol(2);
+            }
+            else if(value=='delete'){
+                buttoncontrol(3);
+            }
+            else{
+                buttoncontrol(4);
+            }
+            console.log(document.getElementById("control").onclick)
+            }
+        
+        function buttoncontrol(value){
+            var topic = document.getElementById('topic');
+            var button = document.getElementById('control');
+            if(value==1){
+                document.getElementById('control').onclick = adduser;
+                button.innerText = "เพิ่ม";
+                topic.innerText = "เพิ่มสมาชิก"
+            }
+            else if(value==2){
+                document.getElementById('control').onclick = edituser;
+                button.innerText = "แก้ไข";
+                topic.innerText = "แก้ไขสมาชิก"
+            }
+            else if(value==3){
+                document.getElementById('control').onclick = deleteuser;
+                button.innerText = "ลบ";
+                topic.innerText = "ลบสมาชิก"
+            }
+            else{
+                topic.innerHTML = "ค้นหาสมาชิก";
+            }
+        }
+
+        function adduser(){
+            console.log('adduser')
+        }
+
+        function edituser(){
+            console.log('edituser')
+        }
+        
+        function deleteuser(){
+            console.log('deleteuser')
+        }
+        // function handleChange(event) {
+        //     var selectElement = event.target;
+        //     var selectedIndex = selectElement.selectedIndex;
+        //     selectElement.selectedIndex = selectedIndex;
+        //     }
+
+
+    </script>
+</body>
+</html>

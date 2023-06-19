@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>แสดงผลลัพธ์จากไฟล์ Excel</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+  
+</head>
+<body>
+  <input type="file" id="excelFile" />
+  <table id="excelTable"></table>
+  <form action="/blank">
+      <input type="submit" value="go-next" onclick="call()">
+  </form>
+  
+  <script>
+    document.getElementById('excelFile').addEventListener('change', handleFile, false);
+    var dataSend = [];
+    function sendDataToServer(dataSend) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("post", "/sendfile", true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          // xhr.onreadystatechange = function () {
+          //   if (xhr.readyState === 4 && xhr.status === 200) {
+          //     // ตัวอย่างการดำเนินการหลังจากได้รับการตอบสนองจากเซิร์ฟเวอร์
+          //     console.log(xhr.responseText);
+          //   }
+          //   else{
+          //     console.log(xhr.status);
+          //   }
+          // };
+          console.log(typeof(dataSend))
+          var jsonData = JSON.stringify(dataSend);
+          console.log(jsonData)
+          console.log(typeof(jsonData))
+          xhr.send(jsonData);
+        }
+    function call(){
+      sendDataToServer(dataSend)
+    }
+    function handleFile(e) {
+      var files = e.target.files;
+      var f = files[0];
+      var reader = new FileReader();
+      
+      
+
+
+      reader.onload = function (e) {
+        
+        var data = new Uint8Array(e.target.result);
+        var workbook = XLSX.read(data, { type: 'array' });
+        var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        var jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        
+        var table = document.getElementById('excelTable');
+        
+        // สร้างแถวสำหรับหัวข้อคอลัมน์
+        var headerRow = document.createElement('tr');
+        Object.keys(jsonData[0]).forEach(function (key) {
+          var headerCell = document.createElement('th');
+          headerCell.textContent = key;
+          headerRow.appendChild(headerCell);
+          
+        });
+        table.appendChild(headerRow);
+
+        // สร้างแถวและเพิ่มข้อมูลในแต่ละเซลล์
+        jsonData.forEach(function (dataRow) {
+          var obj = {
+            name:Object.values(dataRow)[0],
+            email:Object.values(dataRow)[1],
+            studentID:Object.values(dataRow)[2],
+          }
+          dataSend.push(obj);
+          var row = document.createElement('tr');
+          Object.values(dataRow).forEach(function (value) {
+            var cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+          });
+          table.appendChild(row);
+        });
+        
+        console.log(dataSend);
+        
+        
+      };
+      reader.readAsArrayBuffer(f);
+
+      // const table = document.getElementById('excelFile');
+      // const data = JSON.stringify(getTableData(table));
+
+// fetch('/sendfile', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json'
+//   },
+//   body: data
+// })
+// .then(response => {
+//   console.log('ส่งข้อมูลเรียบร้อยแล้ว');
+// })
+// .catch(error => {
+//   console.error('เกิดข้อผิดพลาดในการส่งข้อมูล', error);
+// });
+
+// function getTableData(table) {
+//   const data = [];
+//   const rows = table.getElementsByTagName('tr');
+  
+//   for (let i = 0; i < rows.length; i++) {
+//     const row = rows[i];
+//     const rowData = [];
+//     const cells = row.getElementsByTagName('td');
+    
+//     for (let j = 0; j < cells.length; j++) {
+//       const cell = cells[j];
+//       rowData.push(cell.innerText);
+//     }
+    
+//     data.push(rowData);
+//   }
+  
+//   return data;
+// }
+        }
+  </script>
+
+
+
+  
+
+</body>
+</html>
