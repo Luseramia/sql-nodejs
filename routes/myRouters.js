@@ -3,7 +3,7 @@ const { json } = require('express/lib/response');
 const router = express.Router()
 
 const multer = require('multer')
-const mysql = require('mysql')
+const mysql = require('mysql2')
 require('dotenv').config()
 
 
