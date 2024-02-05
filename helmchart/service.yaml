@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: webclient-service
-  namespace: defualt
+  namespace: default
 spec:
   type: NodePort
   selector:

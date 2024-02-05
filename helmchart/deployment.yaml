@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webclient
-  namespace: defualt
+  namespace: default
   labels:
     app: webclient
 spec:
