@@ -17,5 +17,5 @@ spec:
     spec:
       containers:
         - name: webclient
-          image: localhost:5000/webclient:87
+          image: localhost:5000/webclient:88
           imagePullPolicy: IfNotPresent
